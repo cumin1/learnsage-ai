@@ -72,4 +72,102 @@
 
 .submitButton:hover {
   background: #0051a2;
+}
+
+.pageContainer {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.animatedBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 107, 107, 0.1),
+    rgba(78, 205, 196, 0.1)
+  );
+  z-index: 0;
+}
+
+.animatedBg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/sakura.png') repeat;
+  animation: floatBg 20s linear infinite;
+  opacity: 0.1;
+}
+
+@keyframes floatBg {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+.mainContent {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 1s ease-in;
+}
+
+.decorativeElement1,
+.decorativeElement2 {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0;
+}
+
+.decorativeElement1 {
+  background: rgba(255, 107, 107, 0.2);
+  top: -100px;
+  right: -100px;
+}
+
+.decorativeElement2 {
+  background: rgba(78, 205, 196, 0.2);
+  bottom: -100px;
+  left: -100px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* 响应式调整 */
+@media (max-width: 600px) {
+  .mainContent {
+    padding: 20px;
+  }
 } 
