@@ -19,6 +19,7 @@ import {
   Logout as LogoutIcon
 } from '@mui/icons-material';
 import styles from './chat.module.css';
+import { DouBaoApi } from '@/utils/doubaoApi';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -62,32 +63,25 @@ export default function ChatPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userMessage.content
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('AI响应出错了');
-      }
-
-      const data = await response.json();
+      const doubaoApi = new DouBaoApi();
       
+      const response = await doubaoApi.chat([
+        {
+          role: 'user',
+          content: userMessage.content
+        }
+      ]);
+
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: data.response,
+        content: response,
         id: `assistant-${Date.now()}`
       }]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: '抱歉，我遇到了一些问题，请稍后再试。',
+        content: `抱歉，我遇到了一些问题：${error.message}`,
         id: `error-${Date.now()}`
       }]);
     } finally {
@@ -106,7 +100,7 @@ export default function ChatPage() {
   const handleLogout = () => {
     // 清除登录状态
     document.cookie = 'isLoggedIn=false; path=/';
-    router.push('/login');
+    router.push('/');
   };
 
   return (

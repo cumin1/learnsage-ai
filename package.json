@@ -13,9 +13,13 @@
     "@emotion/styled": "^11.11.x",
     "@mui/icons-material": "^5.x.x",
     "@mui/material": "^5.x.x",
+    "@types/crypto-js": "^4.2.2",
+    "@types/ws": "^8.5.13",
+    "crypto-js": "^4.2.0",
     "next": "14.x.x",
     "react": "^18.x.x",
-    "react-dom": "^18.x.x"
+    "react-dom": "^18.x.x",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/node": "^20",
