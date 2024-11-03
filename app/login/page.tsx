@@ -44,7 +44,7 @@ export default function Login() {
         document.cookie = 'isLoggedIn=true; path=/';
         setShowSuccess(true);
         setTimeout(() => {
-          router.push('/chat');
+          router.push('/character');
         }, 1000);
       } else {
         setError('邮箱或密码错误');

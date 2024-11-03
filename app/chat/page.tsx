@@ -27,18 +27,45 @@ interface Message {
   id: string;
 }
 
+const characterAvatars = {
+  甘雨: '/images/gan_yu.png',
+  刻晴: '/images/ke_qing.png',
+  雷电将军: '/images/raiden_shogun.png',
+};
+
+const greetings: Record<string, string> = {
+  甘雨: '你好，我是甘雨，有什么我可以帮你的吗？',
+  刻晴: '你好，我是刻晴，随时准备帮助你！',
+  雷电将军: '你好，我是雷电将军，有什么问题请告诉我！',
+};
+
 export default function ChatPage() {
   const router = useRouter();
-  const [messages, setMessages] = useState<Message[]>([
-    { 
-      role: 'assistant', 
-      content: '你好！我是AI助手酱，有什么我可以帮你的吗？',
-      id: 'welcome'
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  const [selectedCharacter, setSelectedCharacter] = useState<keyof typeof characterAvatars>('甘雨'); // 默认角色
+  const hasWelcomeMessage = useRef(false); // 使用 useRef 来跟踪是否已经添加过开场白
+
+  // 使用 useEffect 获取选择的角色
+  useEffect(() => {
+    const character = localStorage.getItem('selectedCharacter');
+    if (character && !hasWelcomeMessage.current) {
+      setSelectedCharacter(character as keyof typeof characterAvatars);
+      setMessages(prev => [
+        ...prev,
+        { 
+          role: 'assistant', 
+          content: greetings[character as keyof typeof characterAvatars],
+          id: `welcome-${Date.now()}`
+        }
+      ]);
+      hasWelcomeMessage.current = true;
+    }
+  }, []);
+
+  const assistantAvatar = characterAvatars[selectedCharacter];
 
   // 自动滚动到最新消息
   const scrollToBottom = () => {
@@ -70,7 +97,7 @@ export default function ChatPage() {
           role: 'user',
           content: userMessage.content
         }
-      ]);
+      ], selectedCharacter as string);
 
       setMessages(prev => [...prev, {
         role: 'assistant',
@@ -140,6 +167,7 @@ export default function ChatPage() {
               <Box className={styles.messageContent}>
                 <Avatar
                   className={styles.avatar}
+                  src={message.role === 'assistant' ? assistantAvatar : undefined}
                   sx={{
                     bgcolor: message.role === 'assistant' ? '#FF6B6B' : '#4ECDC4',
                     width: 32,

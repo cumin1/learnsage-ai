@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   AppBar, 
@@ -9,6 +9,7 @@ import {
   Container, 
   Box,
   Paper,
+  Avatar,
   useTheme
 } from '@mui/material';
 import Link from 'next/link';
@@ -18,14 +19,28 @@ import styles from './page.module.css';
 export default function Home() {
   const router = useRouter();
   const theme = useTheme();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userAvatar, setUserAvatar] = useState('/images/default_avatar.png'); // 默认头像
 
   useEffect(() => {
     // 检查登录状态
-    const isLoggedIn = document.cookie.includes('isLoggedIn=true');
-    if (isLoggedIn) {
-      router.push('/chat');
+    const loggedIn = document.cookie.includes('isLoggedIn=true');
+    setIsLoggedIn(loggedIn);
+    
+    if (loggedIn) {
+      // 如果已登录，获取用户头像（可以从 localStorage 或 cookie 中获取）
+      const avatar = localStorage.getItem('userAvatar') || '/images/default_avatar.png';
+      setUserAvatar(avatar);
     }
   }, [router]);
+
+  const handleLogout = () => {
+    // 清除登录状态
+    document.cookie = 'isLoggedIn=false; path=/';
+    localStorage.removeItem('userAvatar'); // 清除头像
+    setIsLoggedIn(false);
+    router.push('/');
+  };
 
   return (
     <Box className={styles.pageContainer}>
@@ -50,24 +65,33 @@ export default function Home() {
           >
             AI助手酱
           </Typography>
-          <Button 
-            component={Link} 
-            href="/login"
-            sx={{
-              background: 'linear-gradient(45deg, #FF6B6B 30%, #FF8E53 90%)',
-              border: 0,
-              borderRadius: 3,
-              boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-              color: 'white',
-              height: 40,
-              padding: '0 30px',
-              '&:hover': {
-                background: 'linear-gradient(45deg, #FE4A4A 30%, #FF7043 90%)',
-              }
-            }}
-          >
-            登录
-          </Button>
+          {isLoggedIn ? (
+            <Avatar 
+              src={userAvatar} 
+              alt="User Avatar" 
+              sx={{ width: 40, height: 40, cursor: 'pointer' }} 
+              onClick={handleLogout} // 点击头像退出登录
+            />
+          ) : (
+            <Button 
+              component={Link} 
+              href="/login"
+              sx={{
+                background: 'linear-gradient(45deg, #FF6B6B 30%, #FF8E53 90%)',
+                border: 0,
+                borderRadius: 3,
+                boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+                color: 'white',
+                height: 40,
+                padding: '0 30px',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #FE4A4A 30%, #FF7043 90%)',
+                }
+              }}
+            >
+              登录
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
 
@@ -124,7 +148,7 @@ export default function Home() {
               variant="contained" 
               size="large" 
               component={Link} 
-              href="/login"
+              href="/character"
               className={styles.startButton}
               sx={{
                 background: 'linear-gradient(45deg, #FF6B6B 30%, #FF8E53 90%)',

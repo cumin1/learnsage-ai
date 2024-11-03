@@ -23,6 +23,13 @@ interface ChatResponse {
   }
 }
 
+// 定义角色特定的系统消息
+const characterSystemMessages: Record<string, string> = {
+  甘雨: '你是游戏《原神》中的甘雨，一个温柔而聪明的角色，喜欢帮助他人，语气温和，常常带有一些诗意。',
+  刻晴: '你是游戏《原神》中的刻晴，一个敏捷而果断的角色，擅长迅速解决问题，语气直接而有力。',
+  雷电将军: '你是游戏《原神》中的雷电将军，一个威严而强大的角色，注重秩序与力量，语气冷静而坚定。',
+};
+
 export class DouBaoApi {
   private baseUrl: string;
 
@@ -30,14 +37,21 @@ export class DouBaoApi {
     this.baseUrl = '/api/chat';
   }
 
-  public async chat(messages: ChatMessage[]): Promise<string> {
+  public async chat(messages: ChatMessage[], character: string): Promise<string> {
     try {
+      const systemMessage: ChatMessage = {
+        role: 'system',
+        content: characterSystemMessages[character] || '你是一个角色，喜欢帮助他人。',
+      };
+
+      const allMessages = [systemMessage, ...messages];
+
       const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ messages })
+        body: JSON.stringify({ messages: allMessages })
       });
 
       if (!response.ok) {
